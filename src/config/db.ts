@@ -23,7 +23,6 @@ const connectDB = async () => {
       logger.warn('Mongoose disconnected');
     });
 
-    // Graceful shutdown
     process.on('SIGINT', async () => {
       await mongoose.connection.close();
       logger.info('Mongoose connection closed due to app termination');
@@ -31,7 +30,11 @@ const connectDB = async () => {
     });
 
   } catch (err) {
-    logger.error(`Database connection error: ${err.message}`);
+    if (err instanceof Error) {
+      logger.error(`Database connection error: ${err.message}`);
+    } else {
+      logger.error(`Database connection error: ${String(err)}`);
+    }
     process.exit(1);
   }
 };

@@ -1,7 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-const env = process.env.NODE_ENV || 'development';
+type Env = 'development' | 'testing' | 'production';
+const env = (process.env.NODE_ENV as Env) || 'development';
 
 const baseConfig = {
   env,
@@ -20,8 +21,7 @@ const baseConfig = {
     prefix: '/api/v1',
   },
 };
-
-const envConfig = {
+const envConfig: Record<Env, any> = {
   development: {
     mongo: {
       uri: process.env.DEV_MONGO_URI || 'mongodb://localhost:27017/equb-dev',

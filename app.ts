@@ -1,7 +1,5 @@
 import express, { Application } from "express";
-import bodyParser from "body-parser";
 import cors from "cors";
-
 import config from "./src/config/config";
 import connectDB from "./src/config/db";
 import userRoutes from "./src/routes/auth.routes";
@@ -12,8 +10,7 @@ const app: Application = express();
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Routes
 app.use(config.api.prefix + "/users", userRoutes);
