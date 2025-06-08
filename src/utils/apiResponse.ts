@@ -15,7 +15,7 @@ export class ApiResponse<T> {
     this.send();
   }
 
-  private send() {
+  public send() {
     this.res.status(this.statusCode).json({
       success: this.statusCode < 400,
       message: this.message,

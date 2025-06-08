@@ -4,20 +4,26 @@ import { ApiError } from '../utils/apiError';
 import { IEqubGroup } from '../models/group.model';
 import EqubGroup from '../models/group.model';
 
-
 class GroupService {
   async createGroup(groupData: {
     name: string;
     description?: string;
     amount: number;
     cycleDuration: number;
-    creator: Types.ObjectId;
+    creator: Types.ObjectId | string;
   }): Promise<IEqubGroup> {
-    const group = await EqubGroup.create(groupData);
-    
-    // Add creator as first member
+    // Ensure creator is a valid ObjectId
+    const creatorId = new Types.ObjectId(groupData.creator);
+
+    const group = await EqubGroup.create({
+      ...groupData,
+      creator: creatorId,
+      members: [creatorId],
+    });
+
+    // Add creator as first member in Membership collection
     await Membership.create({
-      user: groupData.creator,
+      user: creatorId,
       group: group._id
     });
 
@@ -25,39 +31,63 @@ class GroupService {
   }
 
   async joinGroup(
-    groupId: Types.ObjectId,
-    userId: Types.ObjectId
+    groupId: Types.ObjectId | string,
+    userId: Types.ObjectId | string
   ): Promise<IEqubGroup> {
     const group = await EqubGroup.findById(groupId);
-    
+
     if (!group) {
       throw new ApiError(404, 'Group not found');
     }
 
-    if (group.members.includes(userId)) {
+    // Ensure userId is a valid ObjectId
+    const userObjectId = new Types.ObjectId(userId);
+
+    if (group.members.some((member: Types.ObjectId) => member.equals(userObjectId))) {
       throw new ApiError(400, 'User already in group');
     }
 
-    group.members.push(userId);
+    group.members.push(userObjectId);
     await group.save();
 
     await Membership.create({
-      user: userId,
-      group: groupId
+      user: userObjectId,
+      group: group._id
     });
 
     return group;
   }
 
-  async rotatePayout(groupId: Types.ObjectId): Promise<IEqubGroup> {
+  async isGroupMember(
+    groupId: Types.ObjectId | string,
+    userId: Types.ObjectId | string
+  ): Promise<boolean> {
+    const group = await EqubGroup.findById(groupId);
+    if (!group) return false;
+    const userObjectId = new Types.ObjectId(userId);
+    return group.members.some((member: Types.ObjectId) => member.equals(userObjectId));
+  }
+
+  async isCurrentWinner(
+    groupId: Types.ObjectId | string,
+    userId: Types.ObjectId | string
+  ): Promise<boolean> {
+    const group = await EqubGroup.findById(groupId);
+    if (!group || !group.currentWinner) return false;
+    const userObjectId = new Types.ObjectId(userId);
+    return group.currentWinner.equals(userObjectId);
+  }
+
+  async rotatePayout(groupId: Types.ObjectId | string): Promise<IEqubGroup> {
     const group = await EqubGroup.findById(groupId).populate('members');
-    
+
     if (!group) {
       throw new ApiError(404, 'Group not found');
     }
 
     // Simple rotation logic - can be enhanced with more complex rules
-    const eligibleMembers = group.members.filter(member => 
+    // @ts-ignore
+    const eligibleMembers = group.members.filter((member: any) =>
       !member._id.equals(group.currentWinner)
     );
 

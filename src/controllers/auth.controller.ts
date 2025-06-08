@@ -1,14 +1,16 @@
 import { generateToken } from "../utils/auth";
+import { ApiResponse } from "../utils/apiResponse";
+import { ApiError } from "../utils/apiError";
+
+import AuthService from "../services/auth.service";
 import UserService from "../services/user.service";
-import ApiResponse from "../utils/apiResponse";
-import ApiError from "../utils/apiError";
 import { Response, NextFunction } from "express";
 import {
   AuthenticatedRequest,
   LoginRequest,
   RegisterRequest,
 } from "../types/types";
-import { UserType } from "../types/types";
+import { IUser } from "../models/user.model";
 
 export default {
   async register(
@@ -17,7 +19,8 @@ export default {
     next: NextFunction
   ): Promise<void> {
     try {
-      const user: UserType = await UserService.createUser({
+      const { username, email, password } = req.body;
+      const user: IUser = await AuthService.registerUser({
         username,
         email,
         password,
@@ -41,7 +44,8 @@ export default {
     next: NextFunction
   ): Promise<void> {
     try {
-      const user: UserType | null = await UserService.authenticateUser(
+      const { email, password } = req.body;
+      const user: IUser | null = await AuthService.authenticateUser(
         email,
         password
       );
@@ -63,7 +67,12 @@ export default {
     next: NextFunction
   ): Promise<void> {
     try {
-      const user: UserType | null = await UserService.getUserById(req.user.id);
+      if (!req.user || !req.user.id) {
+        throw new ApiError(400, "User information is missing");
+      }
+      const mongoose = await import("mongoose");
+      const userId = new mongoose.Types.ObjectId(req.user.id);
+      const user: IUser | null = await UserService.getUserById(userId);
 
       new ApiResponse(res, 200, user).send();
     } catch (err) {

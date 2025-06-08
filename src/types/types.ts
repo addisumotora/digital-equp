@@ -20,13 +20,13 @@ export interface AuthenticatedRequest extends Request {
   user?: JwtPayload;
 }
 
-export interface UserType {
-  id: string;
-  username: string;
-  email: string;
-}
-
 export interface JwtPayload extends DefaultJwtPayload {
   id: string;
   role: string;
+}
+
+export enum UserRole {
+  MEMBER = 'member',
+  ADMIN = 'admin',
+  GROUP_OWNER = 'group_owner'
 }

@@ -4,12 +4,12 @@ import User from '../models/user.model';
 import { ApiError } from '../utils/apiError';
 
 class UserService {
-  async getUserById(userId: Types.ObjectId): Promise<IUser | null> {
+  async getUserById(userId: Types.ObjectId | string): Promise<IUser | null> {
     return User.findById(userId);
   }
 
   async updateUser(
-    userId: Types.ObjectId,
+    userId: Types.ObjectId | string,
     updateData: Partial<{
       username: string;
       email: string;
@@ -17,7 +17,7 @@ class UserService {
     }>
   ): Promise<IUser | null> {
     const user = await User.findById(userId);
-    
+
     if (!user) {
       throw new ApiError(404, 'User not found');
     }
@@ -31,6 +31,12 @@ class UserService {
     Object.assign(user, updateData);
     await user.save();
     return user;
+  }
+
+  async getUserGroups(userId: Types.ObjectId | string): Promise<any[]> {
+    // Implement logic to fetch groups for a user
+    // Example: return Group.find({ members: userId });
+    throw new Error('getUserGroups not implemented');
   }
 
   async searchUsers(query: string): Promise<IUser[]> {

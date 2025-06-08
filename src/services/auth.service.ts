@@ -1,6 +1,7 @@
+import User from '../models/user.model';
 import { IUser } from '../models/user.model';
 import { ApiError } from '../utils/apiError';
-import User from '../models/user.model';
+
 
 class AuthService {
   async registerUser(userData: {
