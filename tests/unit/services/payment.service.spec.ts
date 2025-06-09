@@ -1,7 +1,4 @@
-// tests/unit/payment.service.test.ts
-
 import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import PaymentService from '../../../src/services/payment.service';
 import Transaction from '../../../src/models/transaction.model';
 import groupService from '../../../src/services/group.service';
@@ -13,16 +10,17 @@ jest.mock('../../../src/utils/paymentSimulator', () => ({
 import { simulatePayment } from '../../../src/utils/paymentSimulator';
 
 describe('PaymentService', () => {
-  let mongoServer: MongoMemoryServer;
-
   beforeAll(async () => {
-    mongoServer = await MongoMemoryServer.create();
-    await mongoose.connect(mongoServer.getUri());
+    const uri = 'mongodb://localhost:27017/payment-service-test'; 
+    await mongoose.connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    } as mongoose.ConnectOptions);
   });
 
   afterAll(async () => {
+    await mongoose.connection.dropDatabase(); 
     await mongoose.disconnect();
-    await mongoServer.stop();
   });
 
   afterEach(async () => {
@@ -74,7 +72,6 @@ describe('PaymentService', () => {
       const fakeTransactionId = 'payout123';
       (simulatePayment as jest.Mock).mockResolvedValue({ transactionId: fakeTransactionId });
 
-      // Mock groupService.getGroupById to return a group with amount
       jest.spyOn(groupService, 'getGroupById').mockResolvedValue({
         _id: new mongoose.Types.ObjectId(),
         amount: 150,
