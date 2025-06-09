@@ -10,7 +10,11 @@
     "strict": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "baseUrl": "./src",
+    "paths": {
+      "*": ["*"]
+    }
   },
-  "include": ["app.ts", "src/**/*"]
+    "include": ["app.ts", "src/**/*", "tests/**/*"]
 }
