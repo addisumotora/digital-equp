@@ -19,10 +19,9 @@ A robust Node.js/Express backend for managing Equb (rotating savings group) oper
     - [Group Management](#group-management)
     - [Payments](#payments)
   - [Role-Based Access](#role-based-access)
+- [Docker](#docker)
   - [Super Admin Bootstrapping](#super-admin-bootstrapping)
   - [Development Scripts](#development-scripts)
-  - [License](#license)
-  - [Contributing](#contributing)
 
 ---
 
@@ -93,6 +92,7 @@ SUPERADMIN_PASSWORD=password
 ## Getting Started
 
 1. **Install dependencies:**
+
    ```sh
    npm install
    ```
@@ -100,6 +100,7 @@ SUPERADMIN_PASSWORD=password
 2. **Set up your `.env` file** (see above).
 
 3. **Run the server in development:**
+
    ```sh
    npm run start:dev
    ```
@@ -159,6 +160,15 @@ Authorization is enforced via the `authorize` middleware in routes.
 
 ---
 
+# Docker
+
+- `docker build -t equp-app .`
+- `docker run -p 5000:5000 --name equp-container equp-app`
+
+---
+
+---
+
 ## Super Admin Bootstrapping
 
 On first run, the app checks for a `super_admin` user.  
@@ -173,13 +183,3 @@ If none exists, it creates one using the credentials in your `.env` or `config.t
 - `npm start` — Run compiled app
 
 ---
-
-## License
-
-[ISC](LICENSE)
-
----
-
-## Contributing
-
-Pull requests are welcome! Please open an issue first to discuss major changes.
