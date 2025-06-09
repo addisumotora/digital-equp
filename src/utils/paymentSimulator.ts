@@ -5,20 +5,30 @@ export interface IPaymentResult {
   transactionId?: string;
   error?: string;
   timestamp: Date;
+  bankAccount?: {
+    accountNumber: string;
+    bankName: string;
+    accountHolder: string;
+  };
 }
 
 export const simulatePayment = async (
   paymentDetails: {
     amount: number;
     userId: string;
+    bankAccount?: {
+      accountNumber: string;
+      bankName: string;
+      accountHolder: string;
+    };
   },
   options?: {
     successRate?: number;
     delayMs?: number;
   }
 ): Promise<IPaymentResult> => {
-  const successRate = options?.successRate ?? 0.9; // 90% success rate by default
-  const delayMs = options?.delayMs ?? 1500; // 1.5s delay by default
+  const successRate = options?.successRate ?? 0.9;
+  const delayMs = options?.delayMs ?? 1500;
 
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -28,13 +38,15 @@ export const simulatePayment = async (
         resolve({
           status: 'success',
           transactionId: `txn_${uuidv4()}`,
-          timestamp: new Date()
+          timestamp: new Date(),
+          bankAccount: paymentDetails.bankAccount
         });
       } else {
         reject({
           status: 'failed',
           error: 'Payment processing failed due to insufficient funds',
-          timestamp: new Date()
+          timestamp: new Date(),
+          bankAccount: paymentDetails.bankAccount
         });
       }
     }, delayMs);

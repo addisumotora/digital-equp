@@ -13,11 +13,10 @@ const extractToken = (req: Request): string | null => {
 
 export const authenticate: RequestHandler = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const token = extractToken(req);
-
   if (!token) return next(new ApiError(401, 'Authentication required'));
 
   try {
-    const secret = config.jwtSecret;
+    const secret = config.jwt.secret;
     const decoded = jwt.verify(token, secret) as JwtPayload;
     req.user = decoded;
     next();

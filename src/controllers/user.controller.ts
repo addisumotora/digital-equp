@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import UserService from '../services/user.service';
 import { ApiResponse } from '../utils/apiResponse';
 import { ApiError } from '../utils/apiError';
+import { UserRole } from '../types/types';
 
 export default {
   async getUserProfile(
@@ -33,19 +34,6 @@ export default {
     }
   },
 
-  async getUserGroups(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const groups = await UserService.getUserGroups(req.params.id);
-      return new ApiResponse(res, 200, groups).send();
-    } catch (err) {
-      next(err);
-    }
-  },
-
   async searchUsers(
     req: Request,
     res: Response,
@@ -58,5 +46,55 @@ export default {
     } catch (err) {
       next(err);
     }
-  }
+  },
+  async deleteUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      await UserService.deleteUser(req.params.id);
+      return new ApiResponse(res, 204, null, 'User deleted successfully').send();
+    } catch (err) {
+      next(err);
+    }
+  },
+  async getAllUsers(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const users = await UserService.getAllUsers();
+      return new ApiResponse(res, 200, users).send();
+    } catch (err) {
+      next(err);
+    }
+  },
+  async getUserByRole(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const role = req.params.role;
+      const users = await UserService.getUserByRole(role as UserRole);
+      return new ApiResponse(res, 200, users).send();
+    } catch (err) {
+      next(err);
+    }
+  },
+  async assignRole(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { userId, role } = req.body;
+      const updatedUser = await UserService.assignRole(userId, role);
+      return new ApiResponse(res, 200, updatedUser, 'Role assigned successfully').send();
+    } catch (err) {
+      next(err);
+    }
+  },
 };

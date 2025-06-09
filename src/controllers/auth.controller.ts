@@ -19,6 +19,7 @@ export default {
     next: NextFunction
   ): Promise<void> {
     try {
+      console.log("Register request received:", req.body);
       const { username, email, password } = req.body;
       const user: IUser = await AuthService.registerUser({
         username,

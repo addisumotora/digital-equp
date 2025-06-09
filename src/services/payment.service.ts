@@ -3,6 +3,7 @@ import Transaction from '../models/transaction.model';
 import { ApiError } from '../utils/apiError';
 import { simulatePayment } from '../utils/paymentSimulator';
 import { TransactionStatus, TransactionType } from '../models/transaction.model';
+import groupService from './group.service';
 
 class PaymentService {
   async processPayment(paymentData: {
@@ -45,13 +46,20 @@ class PaymentService {
     group: Types.ObjectId | string;
     user: Types.ObjectId | string;
     type: TransactionType;
+    bankAccount?: {
+    accountNumber: string;
+    bankName: string;
+    accountHolder: string;
+  };
   }) {
     // Ensure group and user are ObjectIds
     const groupId = new Types.ObjectId(payoutData.group);
     const userId = new Types.ObjectId(payoutData.user);
-
+    const group = await groupService.getGroupById(groupId);
+    
     const transaction = await Transaction.create({
       ...payoutData,
+      amount: group?.amount ?? 0, 
       group: groupId,
       user: userId,
       status: TransactionStatus.PENDING
@@ -60,8 +68,9 @@ class PaymentService {
     try {
       // Simulate payout (could be replaced with real payout logic)
       const payoutResult = await simulatePayment({
-        amount: 0, // Set payout amount if needed
-        userId: userId.toString()
+        amount: group?.amount ?? 0, 
+        userId: userId.toString(),
+        bankAccount: payoutData.bankAccount
       });
 
       transaction.status = TransactionStatus.COMPLETED;

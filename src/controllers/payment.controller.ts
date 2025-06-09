@@ -5,6 +5,8 @@ import { ApiResponse } from '../utils/apiResponse';
 import { ApiError } from '../utils/apiError';
 import { AuthenticatedRequest } from '../types/types';
 import { TransactionType } from '../models/transaction.model';
+import userModel from '../models/user.model';
+import userService from '../services/user.service';
 
 export default {
   async makePayment(
@@ -39,37 +41,39 @@ export default {
     }
   },
 
-  async processPayout(
-    req: AuthenticatedRequest,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      if (!req.user || !req.user.id) {
-        throw new ApiError(401, 'Unauthorized');
-      }
-      const { groupId } = req.params;
-      const userId = req.user.id;
+async processPayout(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { groupId } = req.params;
 
-      // Verify user is the current winner
-      const isWinner = await GroupService.isCurrentWinner(groupId, userId);
-      if (!isWinner) {
-        throw new ApiError(403, 'You are not the current payout recipient');
-      }
-
-      // Process payout
-      const payout = await PaymentService.processPayout({
-        group: groupId,
-        user: userId,
-        type: TransactionType.PAYOUT
-      });
-
-      return new ApiResponse(res, 200, payout, 'Payout processed successfully').send();
-    } catch (err) {
-      next(err);
+    // Get the group and current winner
+    const group = await GroupService.getGroupById(groupId);
+    if (!group || !group.currentWinner) {
+      throw new ApiError(404, 'No current winner for this group');
     }
-  },
 
+    // Fetch winner's bank account info
+    const winner = await userService.getUserById(group.currentWinner);
+    if (!winner?.bankAccount) {
+      throw new ApiError(400, 'Winner bank account information not found');
+    }
+
+    // Process payout to winner
+    const payout = await PaymentService.processPayout({
+      group: groupId,
+      user: group.currentWinner,
+      type: TransactionType.PAYOUT,
+      bankAccount: winner.bankAccount
+    });
+
+    return new ApiResponse(res, 200, payout, 'Payout processed to winner\'s bank account successfully').send();
+  } catch (err) {
+    next(err);
+  }
+},
   async getPaymentHistory(
     req: AuthenticatedRequest,
     res: Response,

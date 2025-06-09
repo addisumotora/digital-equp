@@ -1,5 +1,5 @@
-import jwt, { JwtPayload as DefaultJwtPayload } from 'jsonwebtoken';
-import { Request } from 'express';
+import jwt, { JwtPayload as DefaultJwtPayload } from "jsonwebtoken";
+import { Request } from "express";
 
 export interface RegisterRequest {
   body: {
@@ -26,7 +26,7 @@ export interface JwtPayload extends DefaultJwtPayload {
 }
 
 export enum UserRole {
-  MEMBER = 'member',
-  ADMIN = 'admin',
-  GROUP_OWNER = 'group_owner'
+  SUPER_ADMIN = "super_admin",
+  GROUP_ADMIN = "group_admin",
+  MEMBER = "member",
 }

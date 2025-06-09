@@ -20,17 +20,16 @@ export const paymentSchema = Joi.object({
       'number.positive': 'Amount must be positive',
       'any.required': 'Amount is required'
     }),
+  // type: Joi.string()
+  //   .valid(...Object.values(TransactionType))
+  //   .required(),
 
-  type: Joi.string()
-    .valid(...Object.values(TransactionType))
-    .required(),
+  // reference: Joi.string()
+  //   .optional(),
 
-  reference: Joi.string()
-    .optional(),
-
-  description: Joi.string()
-    .max(200)
-    .optional()
+  // description: Joi.string()
+  //   .max(200)
+  //   .optional()
 });
 
 export const payoutSchema = Joi.object({
@@ -39,17 +38,17 @@ export const payoutSchema = Joi.object({
     .length(24)
     .required(),
 
-  bankDetails: Joi.object({
-    accountNumber: Joi.string()
-      .length(10)
-      .required(),
+  // bankDetails: Joi.object({
+  //   accountNumber: Joi.string()
+  //     .length(10)
+  //     .required(),
 
-    bankCode: Joi.string()
-      .required()
-  }).when('type', {
-    is: TransactionType.PAYOUT,
-    then: Joi.required()
-  })
+  //   bankCode: Joi.string()
+  //     .required()
+  // }).when('type', {
+  //   is: TransactionType.PAYOUT,
+  //   then: Joi.required()
+  // })
 });
 
 export const paymentIdParamSchema = Joi.object({

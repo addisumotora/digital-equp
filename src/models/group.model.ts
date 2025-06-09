@@ -11,6 +11,7 @@ export interface IEqubGroup extends Document {
   isActive: boolean;
   startDate: Date;
   members: Types.ObjectId[];
+  admin?: Types.ObjectId | null;
 }
 
 const EqubGroupSchema: Schema = new Schema({
@@ -23,7 +24,8 @@ const EqubGroupSchema: Schema = new Schema({
   currentWinner: { type: Schema.Types.ObjectId, ref: 'User' },
   isActive: { type: Boolean, default: true },
   startDate: { type: Date, default: Date.now },
-  members: [{ type: Schema.Types.ObjectId, ref: 'User' }]
+  members: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  admin: { type: Schema.Types.ObjectId, ref: 'User', default: null },
 }, {
   timestamps: true,
   versionKey: false
