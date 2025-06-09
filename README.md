@@ -121,8 +121,8 @@ SUPERADMIN_PASSWORD=password
 
 ### User Management
 
-- `GET /api/v1/users/profile` — Get current user profile
-- `PATCH /api/v1/users/profile/:id` — Update user profile
+- `GET /api/v1/users/:id` — Get current user profile
+- `PATCH /api/v1/users/:id` — Update user profile
 - `GET /api/v1/users/search?query=...` — Search users by username/email
 - `PATCH /api/v1/users/:id/assign-role` — Assign a role (super_admin only)
 - `PATCH /api/v1/users/:id/remove-role` — Remove a role (super_admin only)
@@ -183,5 +183,3 @@ If none exists, it creates one using the credentials in your `.env` or `config.t
 ## Contributing
 
 Pull requests are welcome! Please open an issue first to discuss major changes.
-
----
