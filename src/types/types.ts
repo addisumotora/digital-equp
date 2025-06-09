@@ -3,6 +3,7 @@ import { Request } from "express";
 
 export interface RegisterRequest {
   body: {
+    role: UserRole | undefined;
     username: string;
     email: string;
     password: string;

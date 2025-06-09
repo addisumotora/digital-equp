@@ -14,7 +14,7 @@ class AuthService {
     if (await User.findOne({ email: userData.email })) {
       throw new ApiError(400, 'Email already exists');
     }
-    userData.role = UserRole.MEMBER; 
+    userData.role = userData.role? userData.role: UserRole.MEMBER; 
     const user = await User.create(userData);
     return user;
   }

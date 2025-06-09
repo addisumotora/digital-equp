@@ -3,11 +3,9 @@ import cors from "cors";
 import config from "./src/config/config";
 import connectDB from "./src/config/db";  
 import authRoutes from "./src/routes/auth.routes";
-import userRoutes from "./src/routes/auth.routes";
+import userRoutes from "./src/routes/user.routes";
 import groupRoutes from "./src/routes/group.routes";
 import paymentRoutes from "./src/routes/payment.routes";
-import authService from "./src/services/auth.service";
-import { UserRole } from "./src/types/types";
 import { ensureSuperAdmin } from "./src/utils/superAdmin";
 
 const app: Application = express();

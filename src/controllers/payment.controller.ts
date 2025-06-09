@@ -57,16 +57,19 @@ async processPayout(
 
     // Fetch winner's bank account info
     const winner = await userService.getUserById(group.currentWinner);
-    if (!winner?.bankAccount) {
-      throw new ApiError(400, 'Winner bank account information not found');
-    }
+
+
+    // Check if winner has bank account information
+    // if (!winner?.bankAccount) {
+    //   throw new ApiError(400, 'Winner bank account information not found');
+    // }
 
     // Process payout to winner
     const payout = await PaymentService.processPayout({
       group: groupId,
       user: group.currentWinner,
       type: TransactionType.PAYOUT,
-      bankAccount: winner.bankAccount
+      bankAccount: winner?.bankAccount
     });
 
     return new ApiResponse(res, 200, payout, 'Payout processed to winner\'s bank account successfully').send();

@@ -5,7 +5,7 @@ import { UserRole } from '../types/types';
 
 export async function ensureSuperAdmin() {
   const superAdmin = await userService.getUserByRole(UserRole.SUPER_ADMIN);
-  if (!superAdmin) {
+  if (!(superAdmin.length > 0)) {
     await authService.registerUser({
       username: config.superAdmin.username,
       email: config.superAdmin.email,

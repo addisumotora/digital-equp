@@ -30,11 +30,13 @@ export const authorize = (...roles: string[]): RequestHandler => {
     if (!req.user) {
       return next(new ApiError(403, 'Access denied: not authenticated'));
     }
+    
+    const userRoles = Array.isArray(req.user.role) ? req.user.role : [req.user.role];
 
-    if (!roles.includes(req.user.role)) {
+    const hasRole = userRoles.some(role => roles.includes(role));
+    if (!hasRole) {
       return next(new ApiError(403, `Access denied: requires role(s) ${roles.join(', ')}`));
     }
-
     next();
   };
 };

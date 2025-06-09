@@ -11,9 +11,7 @@ export class ApiResponse<T> {
       limit?: number;
       total?: number;
     }
-  ) {
-    this.send();
-  }
+  ) {}
 
   public send() {
     this.res.status(this.statusCode).json({

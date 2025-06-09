@@ -114,8 +114,6 @@ export default {
         throw new Error("User ID is required to delete a group");
       }
 
-      // No role check here! Handled by authorize middleware in routes.
-
       await GroupService.deleteGroup(id);
       return new ApiResponse(
         res,
@@ -123,6 +121,19 @@ export default {
         null,
         "Group deleted successfully"
       ).send();
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async getAllGroups(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const groups = await GroupService.getAllGroups();
+      return new ApiResponse(res, 200, groups).send();
     } catch (err) {
       next(err);
     }

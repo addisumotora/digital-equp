@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
-import UserService from '../services/user.service';
-import { ApiResponse } from '../utils/apiResponse';
-import { ApiError } from '../utils/apiError';
-import { UserRole } from '../types/types';
+import { Request, Response, NextFunction } from "express";
+import UserService from "../services/user.service";
+import { ApiResponse } from "../utils/apiResponse";
+import { ApiError } from "../utils/apiError";
+import { UserRole } from "../types/types";
 
 export default {
   async getUserProfile(
@@ -13,7 +13,7 @@ export default {
     try {
       const user = await UserService.getUserById(req.params.id);
       if (!user) {
-        throw new ApiError(404, 'User not found');
+        throw new ApiError(404, "User not found");
       }
       return new ApiResponse(res, 200, user).send();
     } catch (err) {
@@ -28,7 +28,12 @@ export default {
   ): Promise<void> {
     try {
       const updatedUser = await UserService.updateUser(req.params.id, req.body);
-      return new ApiResponse(res, 200, updatedUser, 'Profile updated successfully').send();
+      return new ApiResponse(
+        res,
+        200,
+        updatedUser,
+        "Profile updated successfully"
+      ).send();
     } catch (err) {
       next(err);
     }
@@ -40,7 +45,7 @@ export default {
     next: NextFunction
   ): Promise<void> {
     try {
-      const query = typeof req.query.q === 'string' ? req.query.q : '';
+      const query = typeof req.query.q === "string" ? req.query.q : "";
       const users = await UserService.searchUsers(query);
       return new ApiResponse(res, 200, users).send();
     } catch (err) {
@@ -54,7 +59,12 @@ export default {
   ): Promise<void> {
     try {
       await UserService.deleteUser(req.params.id);
-      return new ApiResponse(res, 204, null, 'User deleted successfully').send();
+      return new ApiResponse(
+        res,
+        204,
+        null,
+        "User deleted successfully"
+      ).send();
     } catch (err) {
       next(err);
     }
@@ -90,9 +100,37 @@ export default {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { userId, role } = req.body;
-      const updatedUser = await UserService.assignRole(userId, role);
-      return new ApiResponse(res, 200, updatedUser, 'Role assigned successfully').send();
+      const { id } = req.params; // user ID
+      const { role } = req.body;
+      const updatedUser = await UserService.assignRole(id, role);
+      return new ApiResponse(
+        res,
+        200,
+        updatedUser,
+        "Role assigned successfully"
+      ).send();
+    } catch (err) {
+      next(err);
+    }
+  },
+  async removeRole(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { role } = req.body;
+      if (!id || !role) {
+        throw new ApiError(400, "User ID and role are required");
+      }
+      const updatedUser = await UserService.removeRole(id, role);
+      return new ApiResponse(
+        res,
+        200,
+        updatedUser,
+        "Role removed successfully"
+      ).send();
     } catch (err) {
       next(err);
     }

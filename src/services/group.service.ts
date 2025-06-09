@@ -30,6 +30,10 @@ class GroupService {
     return group;
   }
 
+  async getAllGroups(): Promise<IEqubGroup[]> {
+    return EqubGroup.find().populate("members").populate("admin");
+  }
+
   async joinGroup(
     groupId: Types.ObjectId | string,
     userId: Types.ObjectId | string
@@ -130,10 +134,13 @@ class GroupService {
     return group;
   }
 
-  async findGroupById(groupId: Types.ObjectId | string): Promise<IEqubGroup | null> {
-  return EqubGroup.findOne({ _id: groupId }).populate("members").populate("admin");
-}
-
+  async findGroupById(
+    groupId: Types.ObjectId | string
+  ): Promise<IEqubGroup | null> {
+    return EqubGroup.findOne({ _id: groupId })
+      .populate("members")
+      .populate("admin");
+  }
 
   async deleteGroup(groupId: Types.ObjectId | string): Promise<void> {
     const group = await EqubGroup.findByIdAndDelete(groupId);
@@ -180,7 +187,6 @@ class GroupService {
     await group.save();
     return group;
   }
-
 
   async getUserGroups(userId: Types.ObjectId | string): Promise<any[]> {
     // Find groups where the user is a member or admin

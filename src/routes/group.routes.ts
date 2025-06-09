@@ -11,8 +11,10 @@ router.use(authenticate);
 router.post('/', authorize('super_admin'), validate(createGroupSchema), GroupController.createGroup);
 router.post('/:id/join', validate(joinGroupSchema), GroupController.joinGroup);
 router.get('/:id', GroupController.getGroup);
+router.get('/:userId/user-groups', GroupController.getUserGroups);
+router.get('/', GroupController.getAllGroups);
 router.post('/:id/rotate', authorize('group_admin', 'super_admin'), GroupController.rotatePayout);
-router.patch('/:groupId/assign-admin', authorize('super_admin', 'group_admin'), GroupController.assignAdmin);
+router.patch('/:id/assign-admin', authorize('super_admin', 'group_admin'), GroupController.assignAdmin);
 router.patch('/:id/remove-admin', authorize('super_admin', 'group_admin'), GroupController.removeAdmin);
 router.patch('/:id/remove-user', authorize('super_admin', 'group_admin'), GroupController.removeUserFromGroup);
 

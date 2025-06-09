@@ -19,16 +19,15 @@ export default {
     next: NextFunction
   ): Promise<void> {
     try {
-      console.log("Register request received:", req.body);
-      const { username, email, password } = req.body;
       const user: IUser = await AuthService.registerUser({
-        username,
-        email,
-        password,
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+        role: req.body.role,
       });
 
       const token: string = generateToken(user);
-      new ApiResponse(
+      return new ApiResponse(
         res,
         201,
         { user, token },

@@ -7,6 +7,7 @@ export function generateToken(user: IUser): string {
     id: user._id,
     email: user.email,
     username: user.username,
+    role: user.role
   };
 
   return jwt.sign(payload, config.jwt.secret, {
