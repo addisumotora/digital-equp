@@ -11,8 +11,8 @@ router.use(authenticate);
 
 router.post('/', validate(paymentSchema), PaymentController.makePayment);
 
-router.post('/:groupId/payout', validate(payoutSchema), PaymentController.processPayout);
+router.post('/:groupId/payout', authorize('group_admin', 'super_admin'), validate(payoutSchema), PaymentController.processPayout);
 
-router.get('/:groupId/history', authorize('group_admin'), PaymentController.getPaymentHistory);
+router.get('/:groupId/history', authorize('group_admin', 'super_admin'), PaymentController.getPaymentHistory);
 
 export default router;

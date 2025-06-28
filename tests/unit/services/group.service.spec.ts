@@ -1,3 +1,4 @@
+import '../../setup'; // Import database setup for service tests that need database
 import mongoose from 'mongoose';
 import GroupService from '../../../src/services/group.service';
 import EqubGroup from '../../../src/models/group.model';
@@ -5,19 +6,6 @@ import Membership from '../../../src/models/membership.model';
 import User from '../../../src/models/user.model';
 
 describe('GroupService', () => {
-  beforeAll(async () => {
-    const uri = 'mongodb://localhost:27017/test-db'; // Ensure Mongo is running here
-    await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    } as mongoose.ConnectOptions);
-  });
-
-  afterAll(async () => {
-    await mongoose.connection.dropDatabase(); // Cleanup DB after all tests
-    await mongoose.disconnect();
-  });
-
   afterEach(async () => {
     await EqubGroup.deleteMany({});
     await Membership.deleteMany({});

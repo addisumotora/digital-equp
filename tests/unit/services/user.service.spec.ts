@@ -1,11 +1,11 @@
 import { Types } from "mongoose";
-import UserService from "services/user.service";
-import User from "models/user.model";
-import { ApiError } from "utils/apiError";
-import { UserRole } from "types/types";
+import UserService from "../../../src/services/user.service";
+import User from "../../../src/models/user.model";
+import { ApiError } from "../../../src/utils/apiError";
+import { UserRole } from "../../../src/types/types";
 
 
-jest.mock("../models/user.model");
+jest.mock("../../../src/models/user.model");
 
 describe("UserService", () => {
   const mockUserId = new Types.ObjectId();

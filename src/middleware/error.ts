@@ -47,6 +47,13 @@ export const notFound = (req: Request, res: Response, next: NextFunction) => {
 
 export const catchAsync = (fn: Function) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    fn(req, res, next).catch(next);
+    try {
+      const result = fn(req, res, next);
+      if (result && typeof result.catch === 'function') {
+        result.catch(next);
+      }
+    } catch (error) {
+      next(error);
+    }
   };
 };

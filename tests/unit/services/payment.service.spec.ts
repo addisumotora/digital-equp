@@ -1,7 +1,11 @@
+import '../../setup'; // Import database setup for service tests that need database
 import mongoose from 'mongoose';
 import PaymentService from '../../../src/services/payment.service';
-import Transaction from '../../../src/models/transaction.model';
+import Transaction, { TransactionType, TransactionStatus } from '../../../src/models/transaction.model';
 import groupService from '../../../src/services/group.service';
+
+// Import User model to ensure it's registered for population
+import '../../../src/models/user.model';
 
 jest.mock('../../../src/utils/paymentSimulator', () => ({
   simulatePayment: jest.fn(),
@@ -10,19 +14,6 @@ jest.mock('../../../src/utils/paymentSimulator', () => ({
 import { simulatePayment } from '../../../src/utils/paymentSimulator';
 
 describe('PaymentService', () => {
-  beforeAll(async () => {
-    const uri = 'mongodb://localhost:27017/payment-service-test'; 
-    await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    } as mongoose.ConnectOptions);
-  });
-
-  afterAll(async () => {
-    await mongoose.connection.dropDatabase(); 
-    await mongoose.disconnect();
-  });
-
   afterEach(async () => {
     jest.clearAllMocks();
     await Transaction.deleteMany({});
@@ -37,12 +28,12 @@ describe('PaymentService', () => {
         group: new mongoose.Types.ObjectId(),
         user: new mongoose.Types.ObjectId(),
         amount: 100,
-        type: 'PAYMENT' as const,
+        type: TransactionType.CONTRIBUTION,
       };
 
       const transaction = await PaymentService.processPayment(paymentData as any);
 
-      expect(transaction.status).toBe('COMPLETED');
+      expect(transaction.status).toBe(TransactionStatus.COMPLETED);
       expect(transaction.reference).toBe(fakeTransactionId);
       expect(simulatePayment).toHaveBeenCalledWith({
         amount: 100,
@@ -57,13 +48,13 @@ describe('PaymentService', () => {
         group: new mongoose.Types.ObjectId(),
         user: new mongoose.Types.ObjectId(),
         amount: 100,
-        type: 'PAYMENT' as const,
+        type: TransactionType.CONTRIBUTION,
       };
 
       await expect(PaymentService.processPayment(paymentData as any)).rejects.toThrow('Payment processing failed');
 
       const tx = await Transaction.findOne({ user: paymentData.user });
-      expect(tx?.status).toBe('FAILED');
+      expect(tx?.status).toBe(TransactionStatus.FAILED);
     });
   });
 
@@ -80,7 +71,7 @@ describe('PaymentService', () => {
       const payoutData = {
         group: new mongoose.Types.ObjectId(),
         user: new mongoose.Types.ObjectId(),
-        type: 'PAYOUT' as const,
+        type: TransactionType.PAYOUT,
         bankAccount: {
           accountNumber: '123456',
           bankName: 'Test Bank',
@@ -90,7 +81,7 @@ describe('PaymentService', () => {
 
       const transaction = await PaymentService.processPayout(payoutData as any);
 
-      expect(transaction.status).toBe('COMPLETED');
+      expect(transaction.status).toBe(TransactionStatus.COMPLETED);
       expect(transaction.amount).toBe(150);
       expect(transaction.reference).toBe(fakeTransactionId);
       expect(simulatePayment).toHaveBeenCalledWith({
@@ -110,8 +101,8 @@ describe('PaymentService', () => {
         group: groupId,
         user: userId,
         amount: 100,
-        status: 'COMPLETED',
-        type: 'PAYMENT',
+        status: TransactionStatus.COMPLETED,
+        type: TransactionType.CONTRIBUTION,
       });
 
       const payments = await PaymentService.getGroupPayments(groupId);

@@ -12,6 +12,8 @@ export interface IEqubGroup extends Document {
   startDate: Date;
   members: Types.ObjectId[];
   admin?: Types.ObjectId | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const EqubGroupSchema: Schema = new Schema({

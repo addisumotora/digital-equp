@@ -1,10 +1,9 @@
-import AuthService from 'services/auth.service';
-import { UserRole } from 'types/types';
-import { ApiError } from 'utils/apiError';
-import User from 'models/user.model';
+import AuthService from '../../../src/services/auth.service';
+import { UserRole } from '../../../src/types/types';
+import { ApiError } from '../../../src/utils/apiError';
+import User from '../../../src/models/user.model';
 
-
-jest.mock('../../../models/user.model');
+jest.mock('../../../src/models/user.model');
 
 describe('AuthService', () => {
   const mockUserData = {

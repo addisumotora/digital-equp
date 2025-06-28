@@ -23,7 +23,7 @@ export interface AuthenticatedRequest extends Request {
 
 export interface JwtPayload extends DefaultJwtPayload {
   id: string;
-  role: string;
+  role: string | string[];
 }
 
 export enum UserRole {

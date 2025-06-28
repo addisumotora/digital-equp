@@ -8,8 +8,8 @@ const router = Router();
 router.use(authenticate);
 
 router.get('/', userController.getAllUsers);
-router.get('/:id', userController.getUserProfile);
 router.get('/search', userController.searchUsers);
+router.get('/:id', userController.getUserProfile);
 router.patch('/:id', userController.updateUserProfile);
 router.patch('/:id/assign-role', authorize('super_admin'), userController.assignRole);
 router.patch("/:id/remove-role", userController.removeRole)
